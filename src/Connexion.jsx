@@ -89,7 +89,7 @@ function Connexion() {
               border:'1px solid #ddd',padding:'14px',borderRadius:'8px',
               fontSize:'16px',cursor:'pointer',display:'flex',
               alignItems:'center',justifyContent:'center',gap:'10px'}}>
-            🔵 Se connecter avec Google
+             Se connecter avec Google
           </motion.button>
 
         </motion.div>
