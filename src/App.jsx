@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Inscription from './Inscription';
 import Connexion from './Connexion';
+import Projets from './Projets';
 
 const traductions = {
   Français: {
@@ -120,7 +121,8 @@ function Home() {
         </h1>
         <div style={{display:'flex',gap:'15px',alignItems:'center'}}>
           <a href="#" style={{textDecoration:'none',color:'#333'}}>{t.explorer}</a>
-          <a href="#" style={{textDecoration:'none',color:'#333'}}>{t.projets}</a>
+         <span onClick={()=>navigate('/projets')}
+  style={{cursor:'pointer',color:'#333'}}>{t.projets}</span>
           <span onClick={()=>navigate('/connexion')}
             style={{cursor:'pointer',color:'#333'}}>{t.connexion}</span>
 
@@ -307,6 +309,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/inscription" element={<Inscription />} />
         <Route path="/connexion" element={<Connexion />} />
+        <Route path="/projets" element={<Projets />} />
       </Routes>
     </BrowserRouter>
   );
