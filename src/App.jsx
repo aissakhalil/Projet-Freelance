@@ -1,6 +1,3 @@
-
-Copier
-
 import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -9,7 +6,12 @@ import Connexion from './Connexion';
 import Projets from './Projets';
 import Profil from './Profil';
 import PublierProjet from './PublierProjet';
- 
+import Categories from './Categories';
+import PourClients from './PourClients';
+import PourFreelancers from './PourFreelancers';
+import Solutions from './Solutions';
+import ModifierProfil from './ModifierProfil';
+
 const traductions = {
   Français: {
     cat: 'Catégories', clients: 'Pour les clients',
@@ -93,36 +95,38 @@ const traductions = {
     ]
   }
 };
- 
+
 const fadeUp = {
   hidden: { opacity: 0, y: 50 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
 };
- 
+
 function Home() {
   const [langue, setLangue] = useState('Français');
   const [search, setSearch] = useState('');
   const t = traductions[langue];
   const isAr = langue === 'عربي';
   const navigate = useNavigate();
- 
+
   return (
     <div style={{fontFamily:'Arial,sans-serif',margin:0,padding:0,
       width:'100%',overflowX:'hidden',direction: isAr ? 'rtl' : 'ltr'}}>
- 
-      {/* BARRE DU HAUT */}
+
       <div style={{backgroundColor:'#1a1a2e',color:'white',
         padding:'8px 40px',display:'flex',
         justifyContent:'space-between',fontSize:'13px'}}>
         <div style={{display:'flex',gap:'25px'}}>
-          <a href="#" style={{color:'#ccc',textDecoration:'none'}}>{t.cat}</a>
-          <a href="#" style={{color:'#ccc',textDecoration:'none'}}>{t.clients}</a>
-          <a href="#" style={{color:'#ccc',textDecoration:'none'}}>{t.freelances}</a>
-          <a href="#" style={{color:'#ccc',textDecoration:'none'}}>{t.solutions}</a>
+          <span onClick={()=>navigate('/categories')}
+            style={{color:'#ccc',textDecoration:'none',cursor:'pointer'}}>{t.cat}</span>
+          <span onClick={()=>navigate('/pour-clients')}
+            style={{color:'#ccc',textDecoration:'none',cursor:'pointer'}}>{t.clients}</span>
+          <span onClick={()=>navigate('/pour-freelancers')}
+            style={{color:'#ccc',textDecoration:'none',cursor:'pointer'}}>{t.freelances}</span>
+          <span onClick={()=>navigate('/solutions')}
+            style={{color:'#ccc',textDecoration:'none',cursor:'pointer'}}>{t.solutions}</span>
         </div>
       </div>
- 
-      {/* NAVBAR */}
+
       <nav style={{backgroundColor:'#fff',padding:'15px 40px',
         display:'flex',justifyContent:'space-between',
         alignItems:'center',boxShadow:'0 2px 10px rgba(0,0,0,0.1)',
@@ -132,17 +136,12 @@ function Home() {
         </h1>
         <div style={{display:'flex',gap:'15px',alignItems:'center'}}>
           <a href="#" style={{textDecoration:'none',color:'#333'}}>{t.explorer}</a>
- 
           <span onClick={()=>navigate('/projets')}
             style={{cursor:'pointer',color:'#333'}}>{t.projets}</span>
- 
           <span onClick={()=>navigate('/profil')}
             style={{cursor:'pointer',color:'#333'}}>{t.profil}</span>
- 
           <span onClick={()=>navigate('/connexion')}
             style={{cursor:'pointer',color:'#333'}}>{t.connexion}</span>
- 
-          {/* RECHERCHE */}
           <div style={{display:'flex',gap:'5px'}}>
             <input type="text"
               value={search}
@@ -154,32 +153,27 @@ function Home() {
               border:'none',padding:'8px 14px',borderRadius:'5px',
               cursor:'pointer',fontSize:'13px'}}>🔍</button>
           </div>
- 
           <select value={langue} onChange={(e)=>setLangue(e.target.value)}
             style={{padding:'8px',borderRadius:'5px',border:'1px solid #ddd'}}>
             <option>Français</option>
             <option>English</option>
             <option>عربي</option>
           </select>
- 
           <button onClick={()=>navigate('/publier')}
             style={{backgroundColor:'white',color:'#7cb342',
               border:'2px solid #7cb342',padding:'10px 20px',borderRadius:'5px',
               cursor:'pointer',fontWeight:'bold'}}>{t.publier}</button>
- 
           <button onClick={()=>navigate('/inscription')}
             style={{backgroundColor:'#7cb342',color:'white',
               border:'none',padding:'10px 20px',borderRadius:'5px',
               cursor:'pointer',fontWeight:'bold'}}>{t.inscription}</button>
         </div>
       </nav>
- 
-      {/* HERO */}
+
       <motion.div
         initial={{opacity:0}} animate={{opacity:1}} transition={{duration:1}}
         style={{display:'grid',gridTemplateColumns:'1fr 1fr',
           minHeight:'500px',overflow:'hidden'}}>
- 
         <div style={{background:'linear-gradient(135deg,#7cb342,#558b2f)',
           padding:'80px 50px',color:'white',
           display:'flex',flexDirection:'column',justifyContent:'center'}}>
@@ -206,8 +200,7 @@ function Home() {
               onClick={()=>navigate('/inscription')}
               style={{backgroundColor:'white',color:'#7cb342',
                 border:'none',padding:'15px 30px',borderRadius:'5px',
-                cursor:'pointer',fontSize:'16px',fontWeight:'bold',
-                width:'fit-content'}}>
+                cursor:'pointer',fontSize:'16px',fontWeight:'bold'}}>
               {t.inscription} →
             </motion.button>
             <motion.button
@@ -217,13 +210,11 @@ function Home() {
               onClick={()=>navigate('/publier')}
               style={{backgroundColor:'transparent',color:'white',
                 border:'2px solid white',padding:'15px 30px',borderRadius:'5px',
-                cursor:'pointer',fontSize:'16px',fontWeight:'bold',
-                width:'fit-content'}}>
+                cursor:'pointer',fontSize:'16px',fontWeight:'bold'}}>
               {t.publier} →
             </motion.button>
           </div>
         </div>
- 
         <motion.div
           initial={{opacity:0,x:50}} animate={{opacity:1,x:0}}
           transition={{duration:0.8}}
@@ -234,8 +225,7 @@ function Home() {
             style={{width:'100%',height:'100%',objectFit:'cover'}}/>
         </motion.div>
       </motion.div>
- 
-      {/* CATEGORIES */}
+
       <div style={{padding:'60px 40px',backgroundColor:'#f7f7f7',
         width:'100%',boxSizing:'border-box'}}>
         <motion.h3
@@ -250,7 +240,7 @@ function Home() {
               variants={fadeUp}
               transition={{delay: i * 0.1}}
               whileHover={{scale:1.05,boxShadow:'0 8px 20px rgba(0,0,0,0.15)'}}
-              onClick={()=>navigate('/projets')}
+              onClick={()=>navigate('/categories')}
               style={{backgroundColor:'white',borderRadius:'10px',
                 padding:'30px',textAlign:'center',cursor:'pointer',
                 boxShadow:'0 2px 10px rgba(0,0,0,0.08)'}}>
@@ -259,8 +249,7 @@ function Home() {
           ))}
         </div>
       </div>
- 
-      {/* INFOS */}
+
       <div style={{padding:'60px 40px',backgroundColor:'#fff',
         width:'100%',boxSizing:'border-box'}}>
         <motion.h3
@@ -285,8 +274,7 @@ function Home() {
           ))}
         </div>
       </div>
- 
-      {/* NOS SERVICES */}
+
       <div style={{padding:'60px 40px',backgroundColor:'#1a1a2e',
         width:'100%',boxSizing:'border-box'}}>
         <motion.h3
@@ -305,18 +293,13 @@ function Home() {
                 padding:'30px',textAlign:'center',
                 boxShadow:'0 2px 10px rgba(0,0,0,0.2)',
                 transition:'all 0.3s',cursor:'pointer'}}>
-              <h4 style={{color:'#7cb342',marginBottom:'15px',fontSize:'18px'}}>
-                {item.titre}
-              </h4>
-              <p style={{color:'#ccc',fontSize:'14px',lineHeight:'1.7'}}>
-                {item.texte}
-              </p>
+              <h4 style={{color:'#7cb342',marginBottom:'15px',fontSize:'18px'}}>{item.titre}</h4>
+              <p style={{color:'#ccc',fontSize:'14px',lineHeight:'1.7'}}>{item.texte}</p>
             </motion.div>
           ))}
         </div>
       </div>
- 
-      {/* CALL TO ACTION */}
+
       <div style={{padding:'70px 40px',backgroundColor:'#f7f7f7',
         textAlign:'center',width:'100%',boxSizing:'border-box'}}>
         <motion.h3
@@ -336,8 +319,7 @@ function Home() {
             onClick={()=>navigate('/inscription')}
             style={{backgroundColor:'#7cb342',color:'white',border:'none',
               padding:'15px 36px',borderRadius:'8px',cursor:'pointer',
-              fontSize:'16px',fontWeight:'bold',
-              boxShadow:'0 4px 14px rgba(124,179,66,0.4)'}}>
+              fontSize:'16px',fontWeight:'bold'}}>
             Créer un compte
           </motion.button>
           <motion.button whileHover={{scale:1.05}}
@@ -357,8 +339,7 @@ function Home() {
           </motion.button>
         </div>
       </div>
- 
-      {/* FOOTER */}
+
       <footer style={{backgroundColor:'#111',color:'white',
         textAlign:'center',padding:'40px',width:'100%',boxSizing:'border-box'}}>
         <p style={{fontSize:'22px',fontWeight:'bold',color:'#7cb342',marginBottom:'10px'}}>
@@ -366,22 +347,26 @@ function Home() {
         </p>
         <div style={{display:'flex',justifyContent:'center',gap:'30px',
           marginBottom:'20px',fontSize:'14px'}}>
-          <a href="#" style={{color:'#aaa',textDecoration:'none'}}>{t.cat}</a>
-          <a href="#" style={{color:'#aaa',textDecoration:'none'}}>{t.clients}</a>
-          <a href="#" style={{color:'#aaa',textDecoration:'none'}}>{t.freelances}</a>
-          <a href="#" style={{color:'#aaa',textDecoration:'none'}}>{t.solutions}</a>
+          <span onClick={()=>navigate('/categories')}
+            style={{color:'#aaa',cursor:'pointer'}}>{t.cat}</span>
+          <span onClick={()=>navigate('/pour-clients')}
+            style={{color:'#aaa',cursor:'pointer'}}>{t.clients}</span>
+          <span onClick={()=>navigate('/pour-freelancers')}
+            style={{color:'#aaa',cursor:'pointer'}}>{t.freelances}</span>
+          <span onClick={()=>navigate('/solutions')}
+            style={{color:'#aaa',cursor:'pointer'}}>{t.solutions}</span>
           <span onClick={()=>navigate('/profil')}
             style={{color:'#aaa',cursor:'pointer'}}>{t.profil}</span>
           <span onClick={()=>navigate('/publier')}
             style={{color:'#aaa',cursor:'pointer'}}>{t.publier}</span>
         </div>
-        <p style={{color:'#555'}}>© 2026 FreelancePlatform — {t.footer}</p>
+        <p style={{color:'#555'}}>2026 FreelancePlatform — {t.footer}</p>
       </footer>
- 
+
     </div>
   );
 }
- 
+
 function App() {
   return (
     <BrowserRouter>
@@ -392,9 +377,14 @@ function App() {
         <Route path="/projets" element={<Projets />} />
         <Route path="/profil" element={<Profil />} />
         <Route path="/publier" element={<PublierProjet />} />
+        <Route path="/categories" element={<Categories />} />
+        <Route path="/pour-clients" element={<PourClients />} />
+        <Route path="/pour-freelancers" element={<PourFreelancers />} />
+        <Route path="/solutions" element={<Solutions />} />
+        <Route path="/modifier-profil" element={<ModifierProfil />} />
       </Routes>
     </BrowserRouter>
   );
 }
- 
+
 export default App;
