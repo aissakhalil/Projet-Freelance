@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+
+// Importation de tous tes composants
 import Inscription from './Inscription';
 import Connexion from './Connexion';
 import Projets from './Projets';
@@ -11,6 +13,7 @@ import PourClients from './PourClients';
 import PourFreelancers from './PourFreelancers';
 import Solutions from './Solutions';
 import ModifierProfil from './ModifierProfil';
+import Messagerie from './Messagerie';
 
 const traductions = {
   Français: {
@@ -22,8 +25,9 @@ const traductions = {
     recherche: 'Rechercher un service...', btn: 'Rechercher',
     catPop: 'Catégories populaires', tout: 'Tout ce que vous trouvez sur FreelancePlatform',
     footer: 'Tous droits réservés',
-    profil: 'Profil',
+    profil: 'Profil', deconnexion: 'Déconnexion',
     publier: 'Publier un projet',
+    messages: 'Messages',
     cats: ['Programmation & Tech','Graphisme & Design','Marketing Digital',
            'Rédaction & Traduction','Vidéo & Animation','Business','Consulting','Musique & Audio'],
     infos: [
@@ -49,8 +53,9 @@ const traductions = {
     recherche: 'Search for a service...', btn: 'Search',
     catPop: 'Popular Categories', tout: 'Everything you find on FreelancePlatform',
     footer: 'All rights reserved',
-    profil: 'Profile',
+    profil: 'Profile', deconnexion: 'Logout',
     publier: 'Post a project',
+    messages: 'Messages',
     cats: ['Programming & Tech','Graphics & Design','Digital Marketing',
            'Writing & Translation','Video & Animation','Business','Consulting','Music & Audio'],
     infos: [
@@ -76,8 +81,9 @@ const traductions = {
     recherche: 'ابحث عن خدمة...', btn: 'بحث',
     catPop: 'الفئات الشائعة', tout: 'كل ما تجده على المنصة',
     footer: 'جميع الحقوق محفوظة',
-    profil: 'الملف الشخصي',
+    profil: 'الملف الشخصي', deconnexion: 'تسجيل الخروج',
     publier: 'نشر مشروع',
+    messages: 'الرسائل',
     cats: ['البرمجة والتقنية','الجرافيك والتصميم','التسويق الرقمي',
            'الكتابة والترجمة','الفيديو والرسوم','الأعمال','الاستشارات','الموسيقى'],
     infos: [
@@ -104,9 +110,23 @@ const fadeUp = {
 function Home() {
   const [langue, setLangue] = useState('Français');
   const [search, setSearch] = useState('');
+  const [utilisateur, setUtilisateur] = useState(null);
   const t = traductions[langue];
   const isAr = langue === 'عربي';
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const data = localStorage.getItem('utilisateur');
+    if (data) {
+      setUtilisateur(JSON.parse(data));
+    }
+  }, []);
+
+  const handleDeconnexion = () => {
+    localStorage.removeItem('utilisateur');
+    setUtilisateur(null);
+    navigate('/');
+  };
 
   return (
     <div style={{fontFamily:'Arial,sans-serif',margin:0,padding:0,
@@ -131,17 +151,31 @@ function Home() {
         display:'flex',justifyContent:'space-between',
         alignItems:'center',boxShadow:'0 2px 10px rgba(0,0,0,0.1)',
         position:'sticky',top:0,zIndex:100}}>
-        <h1 style={{color:'#7cb342',margin:0,fontSize:'26px'}}>
+        <h1 onClick={()=>navigate('/')} style={{color:'#7cb342',margin:0,fontSize:'26px', cursor:'pointer'}}>
           freelance<span style={{color:'#333'}}>Platform</span>
         </h1>
         <div style={{display:'flex',gap:'15px',alignItems:'center'}}>
           <a href="#" style={{textDecoration:'none',color:'#333'}}>{t.explorer}</a>
           <span onClick={()=>navigate('/projets')}
             style={{cursor:'pointer',color:'#333'}}>{t.projets}</span>
-          <span onClick={()=>navigate('/profil')}
-            style={{cursor:'pointer',color:'#333'}}>{t.profil}</span>
-          <span onClick={()=>navigate('/connexion')}
-            style={{cursor:'pointer',color:'#333'}}>{t.connexion}</span>
+          
+          {utilisateur && (
+            <span onClick={()=>navigate('/messages')}
+              style={{cursor:'pointer',color:'#333', fontWeight:'bold'}}>{t.messages}</span>
+          )}
+
+          {utilisateur ? (
+            <>
+              <span onClick={()=>navigate('/profil')}
+                style={{cursor:'pointer',color:'#333', fontWeight:'bold'}}>{t.profil}</span>
+              <span onClick={handleDeconnexion}
+                style={{cursor:'pointer',color:'#e53935', fontWeight:'bold'}}>{t.deconnexion}</span>
+            </>
+          ) : (
+            <span onClick={()=>navigate('/connexion')}
+              style={{cursor:'pointer',color:'#333'}}>{t.connexion}</span>
+          )}
+
           <div style={{display:'flex',gap:'5px'}}>
             <input type="text"
               value={search}
@@ -163,10 +197,13 @@ function Home() {
             style={{backgroundColor:'white',color:'#7cb342',
               border:'2px solid #7cb342',padding:'10px 20px',borderRadius:'5px',
               cursor:'pointer',fontWeight:'bold'}}>{t.publier}</button>
-          <button onClick={()=>navigate('/inscription')}
-            style={{backgroundColor:'#7cb342',color:'white',
-              border:'none',padding:'10px 20px',borderRadius:'5px',
-              cursor:'pointer',fontWeight:'bold'}}>{t.inscription}</button>
+          
+          {!utilisateur && (
+            <button onClick={()=>navigate('/inscription')}
+              style={{backgroundColor:'#7cb342',color:'white',
+                border:'none',padding:'10px 20px',borderRadius:'5px',
+                cursor:'pointer',fontWeight:'bold'}}>{t.inscription}</button>
+          )}
         </div>
       </nav>
 
@@ -193,16 +230,18 @@ function Home() {
             {t.sous}
           </motion.p>
           <div style={{display:'flex',gap:'14px',flexWrap:'wrap'}}>
-            <motion.button
-              initial={{opacity:0,y:20}} animate={{opacity:1,y:0}}
-              transition={{duration:0.8, delay:0.5}}
-              whileHover={{scale:1.05}}
-              onClick={()=>navigate('/inscription')}
-              style={{backgroundColor:'white',color:'#7cb342',
-                border:'none',padding:'15px 30px',borderRadius:'5px',
-                cursor:'pointer',fontSize:'16px',fontWeight:'bold'}}>
-              {t.inscription} →
-            </motion.button>
+            {!utilisateur && (
+              <motion.button
+                initial={{opacity:0,y:20}} animate={{opacity:1,y:0}}
+                transition={{duration:0.8, delay:0.5}}
+                whileHover={{scale:1.05}}
+                onClick={()=>navigate('/inscription')}
+                style={{backgroundColor:'white',color:'#7cb342',
+                  border:'none',padding:'15px 30px',borderRadius:'5px',
+                  cursor:'pointer',fontSize:'16px',fontWeight:'bold'}}>
+                {t.inscription} →
+              </motion.button>
+            )}
             <motion.button
               initial={{opacity:0,y:20}} animate={{opacity:1,y:0}}
               transition={{duration:0.8, delay:0.65}}
@@ -315,13 +354,15 @@ function Home() {
           Rejoignez des milliers de freelancers et de clients sur FreelancePlatform.
         </motion.p>
         <div style={{display:'flex',gap:'16px',justifyContent:'center',flexWrap:'wrap'}}>
-          <motion.button whileHover={{scale:1.05}}
-            onClick={()=>navigate('/inscription')}
-            style={{backgroundColor:'#7cb342',color:'white',border:'none',
-              padding:'15px 36px',borderRadius:'8px',cursor:'pointer',
-              fontSize:'16px',fontWeight:'bold'}}>
-            Créer un compte
-          </motion.button>
+          {!utilisateur && (
+            <motion.button whileHover={{scale:1.05}}
+              onClick={()=>navigate('/inscription')}
+              style={{backgroundColor:'#7cb342',color:'white',border:'none',
+                padding:'15px 36px',borderRadius:'8px',cursor:'pointer',
+                fontSize:'16px',fontWeight:'bold'}}>
+              Créer un compte
+            </motion.button>
+          )}
           <motion.button whileHover={{scale:1.05}}
             onClick={()=>navigate('/publier')}
             style={{backgroundColor:'#1a1a2e',color:'white',border:'none',
@@ -382,6 +423,7 @@ function App() {
         <Route path="/pour-freelancers" element={<PourFreelancers />} />
         <Route path="/solutions" element={<Solutions />} />
         <Route path="/modifier-profil" element={<ModifierProfil />} />
+        <Route path="/messages" element={<Messagerie />} />
       </Routes>
     </BrowserRouter>
   );

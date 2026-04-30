@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
@@ -29,6 +29,24 @@ function Projets() {
   const navigate = useNavigate();
   const [catActive, setCatActive] = useState('Tous');
   const [search, setSearch] = useState('');
+  const [utilisateur, setUtilisateur] = useState(null);
+
+  // Vérification de l'utilisateur connecté
+  useEffect(() => {
+    const data = localStorage.getItem('utilisateur');
+    if (data) {
+      setUtilisateur(JSON.parse(data));
+    }
+  }, []);
+
+  const handleDeconnexion = () => {
+    localStorage.removeItem('utilisateur');
+    window.location.reload();
+  };
+
+  const handlePostuler = (titre) => {
+    alert(`Votre candidature pour "${titre}" a été envoyée !`);
+  };
 
   const projetsFiltres = projetsData.filter(p => {
     const matchCat = catActive === 'Tous' || p.categorie === catActive;
@@ -51,12 +69,24 @@ function Projets() {
         <div style={{display:'flex',gap:'15px',alignItems:'center'}}>
           <span onClick={()=>navigate('/')}
             style={{cursor:'pointer',color:'#333'}}>Accueil</span>
-          <span onClick={()=>navigate('/connexion')}
-            style={{cursor:'pointer',color:'#333'}}>Connexion</span>
-          <button onClick={()=>navigate('/inscription')}
-            style={{backgroundColor:'#7cb342',color:'white',
-              border:'none',padding:'10px 20px',borderRadius:'5px',
-              cursor:'pointer',fontWeight:'bold'}}>Inscription</button>
+          
+          {utilisateur ? (
+            <>
+              <span onClick={()=>navigate('/profil')}
+                style={{cursor:'pointer',color:'#333', fontWeight:'bold'}}>Mon Profil</span>
+              <span onClick={handleDeconnexion}
+                style={{cursor:'pointer',color:'#e53935', fontWeight:'bold'}}>Déconnexion</span>
+            </>
+          ) : (
+            <>
+              <span onClick={()=>navigate('/connexion')}
+                style={{cursor:'pointer',color:'#333'}}>Connexion</span>
+              <button onClick={()=>navigate('/inscription')}
+                style={{backgroundColor:'#7cb342',color:'white',
+                  border:'none',padding:'10px 20px',borderRadius:'5px',
+                  cursor:'pointer',fontWeight:'bold'}}>Inscription</button>
+            </>
+          )}
         </div>
       </nav>
 
@@ -72,7 +102,6 @@ function Projets() {
   letterSpacing:'1px',
   textShadow:'2px 4px 10px rgba(0,0,0,0.3)',
   marginBottom:'20px'}}>
-  Projets disponibles
           Projets disponibles
         </motion.h2>
         <motion.div
@@ -151,14 +180,29 @@ function Projets() {
                 <div style={{textAlign:'right'}}>
                   <p style={{margin:0,fontSize:'20px',fontWeight:'bold',
                     color:'#7cb342'}}>{projet.budget}</p>
-                  <motion.button
-                    whileHover={{scale:1.05}}
-                    whileTap={{scale:0.95}}
-                    style={{backgroundColor:'#7cb342',color:'white',
+                  
+                  {/* LOGIQUE DU BOUTON POSTULER : SEULEMENT POUR FREELANCE CONNECTÉ */}
+                  {utilisateur?.role === 'freelancer' ? (
+                    <motion.button
+                      whileHover={{scale:1.05}}
+                      whileTap={{scale:0.95}}
+                      onClick={() => handlePostuler(projet.titre)}
+                      style={{backgroundColor:'#7cb342',color:'white',
+                        border:'none',padding:'8px 16px',borderRadius:'5px',
+                        cursor:'pointer',marginTop:'5px',fontWeight:'bold'}}>
+                      Postuler
+                    </motion.button>
+                  ) : utilisateur?.role === 'client' ? (
+                    <span style={{fontSize:'11px', color:'#aaa'}}>Vue client</span>
+                  ) : (
+                    <button 
+                      onClick={()=>navigate('/connexion')}
+                      style={{backgroundColor:'#eee',color:'#777',
                       border:'none',padding:'8px 16px',borderRadius:'5px',
-                      cursor:'pointer',marginTop:'5px',fontWeight:'bold'}}>
-                    Postuler
-                  </motion.button>
+                      cursor:'pointer',marginTop:'5px',fontSize:'12px'}}>
+                      Se connecter
+                    </button>
+                  )}
                 </div>
               </div>
             </motion.div>
@@ -169,7 +213,7 @@ function Projets() {
           <motion.div
             initial={{opacity:0}} animate={{opacity:1}}
             style={{textAlign:'center',padding:'60px',color:'#aaa'}}>
-            <p style={{fontSize:'50px'}}>Aucun projet trouvé</p>
+            <p style={{fontSize:'25px'}}>Aucun projet trouvé</p>
           </motion.div>
         )}
       </div>

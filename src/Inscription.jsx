@@ -1,39 +1,46 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
- 
+
 export default function Inscription() {
   const navigate = useNavigate();
   const [type, setType] = useState(''); // 'client' ou 'freelancer'
   const [form, setForm] = useState({ nom: '', email: '', password: '' });
   const [erreur, setErreur] = useState('');
- 
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
- 
+
   const handleSubmit = () => {
     if (!type) { setErreur("Veuillez choisir un type de compte."); return; }
     if (!form.nom || !form.email || !form.password) { setErreur("Tous les champs sont obligatoires."); return; }
- 
-    // Sauvegarder l'utilisateur dans localStorage
+
+    // --- LOGIQUE DE SAUVEGARDE ---
     const utilisateur = {
       nom: form.nom,
       email: form.email,
-      type: type, // 'client' ou 'freelancer'
+      password: form.password, // Sauvegardé pour la simulation de connexion
+      type: type, 
+      role: type, 
       titre: type === 'freelancer' ? 'Développeur Freelancer' : 'Client',
       localisation: 'Maroc',
       membre: `Membre depuis ${new Date().toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}`,
-      avatar: `https://i.pravatar.cc/150?u=${form.email}`,
+      // Avatar intelligent selon le choix
+      avatar: type === 'client' 
+        ? "https://cdn-icons-png.flaticon.com/512/3135/3135768.png" 
+        : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
     };
- 
+
     localStorage.setItem('utilisateur', JSON.stringify(utilisateur));
-    navigate('/profil');
+    
+    // On utilise href pour forcer la Navbar de App.jsx à voir la connexion
+    window.location.href = "/"; 
   };
- 
+
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#f7f7f7', fontFamily: 'Arial, sans-serif' }}>
- 
+
       {/* NAVBAR */}
       <nav style={{ backgroundColor: '#fff', padding: '15px 40px', display: 'flex',
         justifyContent: 'space-between', alignItems: 'center',
@@ -46,7 +53,7 @@ export default function Inscription() {
           Déjà un compte ? <strong style={{ color: '#7cb342' }}>Se connecter</strong>
         </span>
       </nav>
- 
+
       {/* HEADER */}
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
         style={{ background: 'linear-gradient(135deg,#7cb342,#558b2f)',
@@ -59,21 +66,21 @@ export default function Inscription() {
         </motion.h2>
         <p style={{ opacity: 0.9 }}>Rejoignez des milliers de professionnels</p>
       </motion.div>
- 
+
       <div style={{ maxWidth: '600px', margin: '40px auto', padding: '0 20px' }}>
         <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           style={{ backgroundColor: 'white', borderRadius: '12px',
             padding: '40px', boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}>
- 
+
           {/* CHOIX TYPE DE COMPTE */}
           <h3 style={{ color: '#333', marginBottom: '8px', fontSize: '16px' }}>
             Je suis... <span style={{ color: '#e53935', fontSize: '18px' }}>*</span>
           </h3>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '28px' }}>
             {[
-              { val: 'client', emoji: '🏢', titre: 'Un client', desc: 'Je publie des projets et cherche des freelancers' },
-              { val: 'freelancer', emoji: '👨‍💻', titre: 'Un freelancer', desc: 'Je propose mes services et postule aux projets' },
+              { val: 'client', emoji: '', titre: 'Un client', desc: 'Je publie des projets et cherche des freelancers' },
+              { val: 'freelancer', emoji: '', titre: 'Un freelancer', desc: 'Je propose mes services et postule aux projets' },
             ].map(opt => (
               <motion.div key={opt.val} whileHover={{ scale: 1.03 }} onClick={() => setType(opt.val)}
                 style={{
@@ -97,7 +104,7 @@ export default function Inscription() {
               </motion.div>
             ))}
           </div>
- 
+
           {/* CHAMPS */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
             {[
@@ -119,7 +126,7 @@ export default function Inscription() {
               </div>
             ))}
           </div>
- 
+
           {/* ERREUR */}
           {erreur && (
             <div style={{ backgroundColor: '#ffebee', color: '#c62828', padding: '12px 16px',
@@ -127,7 +134,7 @@ export default function Inscription() {
               ⚠️ {erreur}
             </div>
           )}
- 
+
           {/* BOUTON */}
           <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
             onClick={handleSubmit}
@@ -135,9 +142,9 @@ export default function Inscription() {
               border: 'none', padding: '15px', borderRadius: '8px',
               fontSize: '16px', fontWeight: 'bold', cursor: 'pointer', marginTop: '24px',
               boxShadow: '0 4px 14px rgba(124,179,66,0.4)' }}>
-            Créer mon compte {type === 'freelancer' ? '👨‍💻' : type === 'client' ? '🏢' : ''} →
+            Créer mon compte {type === 'freelancer' ? '' : type === 'client' ? '🏢' : ''} →
           </motion.button>
- 
+
           <p style={{ textAlign: 'center', color: '#888', fontSize: '13px', marginTop: '16px' }}>
             Déjà un compte ?{' '}
             <span onClick={() => navigate('/connexion')}
@@ -147,7 +154,7 @@ export default function Inscription() {
           </p>
         </motion.div>
       </div>
- 
+
       <footer style={{ backgroundColor: '#1a1a2e', color: 'white', textAlign: 'center', padding: '30px', marginTop: '40px' }}>
         <p style={{ color: '#7cb342', fontWeight: 'bold', fontSize: '18px' }}>freelancePlatform</p>
         <p style={{ color: '#aaa', fontSize: '13px' }}>© 2026 FreelancePlatform — Tous droits réservés</p>
