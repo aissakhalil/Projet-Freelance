@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import axios from 'axios';
 
 export default function Inscription() {
   const navigate = useNavigate();
-  const [type, setType] = useState(''); // 'client' ou 'freelancer'
+  const [type, setType] = useState('');
   const [form, setForm] = useState({ nom: '', email: '', password: '' });
   const [erreur, setErreur] = useState('');
 
@@ -12,30 +13,25 @@ export default function Inscription() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!type) { setErreur("Veuillez choisir un type de compte."); return; }
     if (!form.nom || !form.email || !form.password) { setErreur("Tous les champs sont obligatoires."); return; }
 
-    // --- LOGIQUE DE SAUVEGARDE ---
-    const utilisateur = {
-      nom: form.nom,
-      email: form.email,
-      password: form.password, // Sauvegardé pour la simulation de connexion
-      type: type, 
-      role: type, 
-      titre: type === 'freelancer' ? 'Développeur Freelancer' : 'Client',
-      localisation: 'Maroc',
-      membre: `Membre depuis ${new Date().toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}`,
-      // Avatar intelligent selon le choix
-      avatar: type === 'client' 
-        ? "https://cdn-icons-png.flaticon.com/512/3135/3135768.png" 
-        : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
-    };
+    try {
+      await axios.post('http://127.0.0.1:8000/api/register/', {
+        username: form.nom,
+        email: form.email,
+        password: form.password,
+        role: type            // ← ajout
+      });
 
-    localStorage.setItem('utilisateur', JSON.stringify(utilisateur));
-    
-    // On utilise href pour forcer la Navbar de App.jsx à voir la connexion
-    window.location.href = "/"; 
+      alert("Compte créé avec succès ! Veuillez vous connecter.");
+      navigate('/connexion');
+
+    } catch (err) {
+      console.error(err);
+      setErreur(err.response?.data?.error || "Erreur lors de l'inscription. Essayez un autre nom.");
+    }
   };
 
   return (
@@ -79,8 +75,8 @@ export default function Inscription() {
           </h3>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '28px' }}>
             {[
-              { val: 'client', emoji: '', titre: 'Un client', desc: 'Je publie des projets et cherche des freelancers' },
-              { val: 'freelancer', emoji: '', titre: 'Un freelancer', desc: 'Je propose mes services et postule aux projets' },
+              { val: 'client', emoji: '🏢', titre: 'Un client', desc: 'Je publie des projets et cherche des freelancers' },
+              { val: 'freelancer', emoji: '💻', titre: 'Un freelancer', desc: 'Je propose mes services et postule aux projets' },
             ].map(opt => (
               <motion.div key={opt.val} whileHover={{ scale: 1.03 }} onClick={() => setType(opt.val)}
                 style={{
@@ -142,7 +138,7 @@ export default function Inscription() {
               border: 'none', padding: '15px', borderRadius: '8px',
               fontSize: '16px', fontWeight: 'bold', cursor: 'pointer', marginTop: '24px',
               boxShadow: '0 4px 14px rgba(124,179,66,0.4)' }}>
-            Créer mon compte {type === 'freelancer' ? '' : type === 'client' ? '🏢' : ''} →
+            Créer mon compte {type === 'freelancer' ? '💻' : type === 'client' ? '🏢' : ''} →
           </motion.button>
 
           <p style={{ textAlign: 'center', color: '#888', fontSize: '13px', marginTop: '16px' }}>
