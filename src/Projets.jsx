@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from './api';
+import Footer from './Footer';
+import BrandTitle from './BrandTitle';
 
 const categories = ['Tous', 'Développement Web', 'Design', 'Marketing',
   'Développement Mobile', 'Traduction', 'Vidéo'];
@@ -116,8 +118,8 @@ function Projets() {
         alignItems: 'center', boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
         position: 'sticky', top: 0, zIndex: 100 }}>
         <h1 onClick={() => navigate('/')}
-          style={{ color: '#7cb342', margin: 0, fontSize: '26px', cursor: 'pointer' }}>
-          freelance<span style={{ color: '#333' }}>Platform</span>
+          style={{ margin: 0, fontSize: '26px', cursor: 'pointer' }}>
+          <BrandTitle />
         </h1>
         <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
           <span onClick={() => navigate('/')} style={{ cursor: 'pointer', color: '#333' }}>Accueil</span>
@@ -272,12 +274,7 @@ function Projets() {
         )}
       </div>
 
-      {/* FOOTER */}
-      <footer style={{ backgroundColor: '#1a1a2e', color: 'white',
-        textAlign: 'center', padding: '30px', marginTop: '40px' }}>
-        <p style={{ color: '#7cb342', fontWeight: 'bold', fontSize: '18px' }}>freelancePlatform</p>
-        <p style={{ color: '#aaa', fontSize: '13px' }}>2026 FreelancePlatform Tous droits réservés</p>
-      </footer>
+      <Footer />
 
       {/* ===== MODAL CANDIDATURE ===== */}
       <AnimatePresence>

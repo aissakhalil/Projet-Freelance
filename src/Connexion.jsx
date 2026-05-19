@@ -2,19 +2,33 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import axios from 'axios';
+import Footer from './Footer';
+import BrandTitle from './BrandTitle';
 
 export default function Connexion() {
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: '', password: '' });
-  const [erreur, setErreur] = useState('');
+  const [errors, setErrors] = useState({ email: '', password: '', form: '' });
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+    setErrors({ ...errors, [e.target.name]: '' });
   };
 
   const handleConnexion = async (e) => {
     e.preventDefault();
-    setErreur("");
+    setErrors({ email: '', password: '', form: '' });
+
+    const nextErrors = {};
+    if (!form.email.trim()) nextErrors.email = "L'adresse email ou le nom d'utilisateur est requis.";
+    if (!form.password) nextErrors.password = "Le mot de passe est requis.";
+    if (form.email.trim() && form.email.includes('@') && !/^\S+@\S+\.\S+$/.test(form.email)) {
+      nextErrors.email = "L'adresse email n'est pas valide.";
+    }
+    if (Object.keys(nextErrors).length > 0) {
+      setErrors({ ...errors, ...nextErrors });
+      return;
+    }
 
     try {
       const response = await axios.post('http://127.0.0.1:8000/api/token/', {
@@ -52,7 +66,14 @@ export default function Connexion() {
 
     } catch (err) {
       console.error(err);
-      setErreur("Email ou mot de passe incorrect, ou serveur injoignable.");
+      const apiError = err.response?.data?.detail || err.response?.data?.error;
+      if (err.response?.status === 401) {
+        setErrors({ ...errors, form: "Nom d'utilisateur ou mot de passe incorrect." });
+      } else if (apiError) {
+        setErrors({ ...errors, form: apiError });
+      } else {
+        setErrors({ ...errors, form: "Erreur de connexion. Vérifiez vos informations." });
+      }
     }
   };
 
@@ -62,8 +83,8 @@ export default function Connexion() {
       <nav style={{ backgroundColor: '#fff', padding: '15px 40px', display: 'flex',
         justifyContent: 'space-between', alignItems: 'center',
         boxShadow: '0 2px 10px rgba(0,0,0,0.1)', position: 'sticky', top: 0, zIndex: 100 }}>
-        <h1 onClick={() => navigate('/')} style={{ color: '#7cb342', margin: 0, fontSize: '26px', cursor: 'pointer' }}>
-          freelance<span style={{ color: '#333' }}>Platform</span>
+        <h1 onClick={() => navigate('/')} style={{ margin: 0, fontSize: '26px', cursor: 'pointer' }}>
+          <BrandTitle />
         </h1>
       </nav>
 
@@ -83,6 +104,11 @@ export default function Connexion() {
               <input type="text" name="email" value={form.email} onChange={handleChange} required
                 placeholder="votre@email.com"
                 style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #ddd', boxSizing: 'border-box' }} />
+              {errors.email && (
+                <div style={{ color: '#e53935', fontSize: '13px', marginTop: '8px' }}>
+                  ⚠️ {errors.email}
+                </div>
+              )}
             </div>
 
             <div style={{ marginBottom: '20px' }}>
@@ -92,11 +118,16 @@ export default function Connexion() {
               <input type="password" name="password" value={form.password} onChange={handleChange} required
                 placeholder="••••••••"
                 style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #ddd', boxSizing: 'border-box' }} />
+              {errors.password && (
+                <div style={{ color: '#e53935', fontSize: '13px', marginTop: '8px' }}>
+                  ⚠️ {errors.password}
+                </div>
+              )}
             </div>
 
-            {erreur && (
+            {errors.form && (
               <div style={{ color: '#e53935', fontSize: '14px', marginBottom: '20px', textAlign: 'center' }}>
-                ⚠️ {erreur}
+                ⚠️ {errors.form}
               </div>
             )}
 
@@ -116,6 +147,7 @@ export default function Connexion() {
           </p>
         </motion.div>
       </div>
+      <Footer />
     </div>
   );
 }

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import api from './api'; // On utilise notre nouvel utilitaire sécurisé au lieu d'axios direct
+import Footer from './Footer';
+import BrandTitle from './BrandTitle';
 
 export default function Messagerie() {
   const navigate = useNavigate();
@@ -95,8 +97,8 @@ export default function Messagerie() {
       <nav style={{ backgroundColor: '#fff', padding: '15px 40px', display: 'flex',
         justifyContent: 'space-between', alignItems: 'center',
         boxShadow: '0 2px 10px rgba(0,0,0,0.1)', position: 'sticky', top: 0, zIndex: 100 }}>
-        <h1 onClick={() => navigate('/')} style={{ color: '#7cb342', margin: 0, fontSize: '26px', cursor: 'pointer' }}>
-          freelance<span style={{ color: '#333' }}>Platform</span>
+        <h1 onClick={() => navigate('/')} style={{ margin: 0, fontSize: '26px', cursor: 'pointer' }}>
+          <BrandTitle />
         </h1>
         <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
           <span onClick={() => navigate('/')} style={{ cursor: 'pointer', color: '#333' }}>Accueil</span>
@@ -201,6 +203,7 @@ export default function Messagerie() {
           )}
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

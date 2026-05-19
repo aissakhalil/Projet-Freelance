@@ -2,20 +2,38 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import axios from 'axios';
+import Footer from './Footer';
+import BrandTitle from './BrandTitle';
 
 export default function Inscription() {
   const navigate = useNavigate();
   const [type, setType] = useState('');
   const [form, setForm] = useState({ nom: '', email: '', password: '' });
-  const [erreur, setErreur] = useState('');
+  const [errors, setErrors] = useState({ type: '', nom: '', email: '', password: '', form: '' });
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+    setErrors({ ...errors, [e.target.name]: '' });
   };
 
   const handleSubmit = async () => {
-    if (!type) { setErreur("Veuillez choisir un type de compte."); return; }
-    if (!form.nom || !form.email || !form.password) { setErreur("Tous les champs sont obligatoires."); return; }
+    const nextErrors = { type: '', nom: '', email: '', password: '', form: '' };
+    if (!type) nextErrors.type = "Veuillez choisir un type de compte.";
+    if (!form.nom.trim()) nextErrors.nom = "Le nom est requis.";
+    if (!form.email.trim()) {
+      nextErrors.email = "L'adresse email est requise.";
+    } else if (!/^\S+@\S+\.\S+$/.test(form.email)) {
+      nextErrors.email = "L'adresse email n'est pas valide.";
+    } else if (!form.email.toLowerCase().endsWith('@gmail.com')) {
+      nextErrors.email = "L'adresse email doit se terminer par @gmail.com.";
+    }
+    if (!form.password) nextErrors.password = "Le mot de passe est requis.";
+
+    if (nextErrors.type || nextErrors.nom || nextErrors.email || nextErrors.password) {
+      setErrors(nextErrors);
+      return;
+    }
+    setErrors({ type: '', nom: '', email: '', password: '', form: '' });
 
     try {
       await axios.post('http://127.0.0.1:8000/api/register/', {
@@ -30,7 +48,14 @@ export default function Inscription() {
 
     } catch (err) {
       console.error(err);
-      setErreur(err.response?.data?.error || "Erreur lors de l'inscription. Essayez un autre nom.");
+      const apiError = err.response?.data?.error || err.response?.data?.detail;
+      if (apiError?.toLowerCase().includes('utilisateur')) {
+        setErrors({ ...errors, nom: apiError });
+      } else if (apiError?.toLowerCase().includes('email')) {
+        setErrors({ ...errors, email: apiError });
+      } else {
+        setErrors({ ...errors, form: apiError || "Erreur lors de l'inscription. Vérifiez vos informations." });
+      }
     }
   };
 
@@ -41,8 +66,8 @@ export default function Inscription() {
       <nav style={{ backgroundColor: '#fff', padding: '15px 40px', display: 'flex',
         justifyContent: 'space-between', alignItems: 'center',
         boxShadow: '0 2px 10px rgba(0,0,0,0.1)', position: 'sticky', top: 0, zIndex: 100 }}>
-        <h1 onClick={() => navigate('/')} style={{ color: '#7cb342', margin: 0, fontSize: '26px', cursor: 'pointer' }}>
-          freelance<span style={{ color: '#333' }}>Platform</span>
+        <h1 onClick={() => navigate('/')} style={{ margin: 0, fontSize: '26px', cursor: 'pointer' }}>
+          <BrandTitle />
         </h1>
         <span onClick={() => navigate('/connexion')}
           style={{ cursor: 'pointer', color: '#333', fontSize: '14px' }}>
@@ -100,12 +125,17 @@ export default function Inscription() {
               </motion.div>
             ))}
           </div>
+          {errors.type && (
+            <div style={{ color: '#e53935', fontSize: '13px', marginTop: '-10px', marginBottom: '18px' }}>
+              ⚠️ {errors.type}
+            </div>
+          )}
 
           {/* CHAMPS */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
             {[
               { name: 'nom', label: 'Nom complet', placeholder: 'Ex: Yassine Khalil', type: 'text' },
-              { name: 'email', label: 'Adresse email', placeholder: 'Ex: yassine@email.com', type: 'email' },
+              { name: 'email', label: 'Adresse email', placeholder: 'Ex: yassine@gmail.com', type: 'email' },
               { name: 'password', label: 'Mot de passe', placeholder: '••••••••', type: 'password' },
             ].map(field => (
               <div key={field.name}>
@@ -119,15 +149,19 @@ export default function Inscription() {
                   style={{ width: '100%', padding: '12px', borderRadius: '8px',
                     border: '1px solid #ddd', fontSize: '15px',
                     boxSizing: 'border-box', outline: 'none' }} />
+                {errors[field.name] && (
+                  <div style={{ color: '#e53935', fontSize: '13px', marginTop: '8px' }}>
+                    ⚠️ {errors[field.name]}
+                  </div>
+                )}
               </div>
             ))}
           </div>
 
-          {/* ERREUR */}
-          {erreur && (
+          {errors.form && (
             <div style={{ backgroundColor: '#ffebee', color: '#c62828', padding: '12px 16px',
               borderRadius: '8px', marginTop: '16px', fontSize: '14px', borderLeft: '4px solid #e53935' }}>
-              ⚠️ {erreur}
+              ⚠️ {errors.form}
             </div>
           )}
 
@@ -151,10 +185,7 @@ export default function Inscription() {
         </motion.div>
       </div>
 
-      <footer style={{ backgroundColor: '#1a1a2e', color: 'white', textAlign: 'center', padding: '30px', marginTop: '40px' }}>
-        <p style={{ color: '#7cb342', fontWeight: 'bold', fontSize: '18px' }}>freelancePlatform</p>
-        <p style={{ color: '#aaa', fontSize: '13px' }}>© 2026 FreelancePlatform — Tous droits réservés</p>
-      </footer>
+      <Footer />
     </div>
   );
 }

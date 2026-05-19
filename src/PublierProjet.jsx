@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import api from './api'; // Import de la configuration sécurisée
+import api from './api';
+import Footer from './Footer';
 
 function PublierProjet() {
   const navigate = useNavigate();
   const [etape, setEtape] = useState(1);
   const [form, setForm] = useState({
-    titre: '', 
-    categorie: '', 
+    titre: '',
+    categorie: '',
     description: '',
-    budget: '', 
-    delai: '', 
+    budget: '',
+    delai: '',
     competences: ''
   });
 
@@ -24,51 +25,44 @@ function PublierProjet() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // --- LOGIQUE D'ENVOI À DJANGO ---
   const envoyerProjet = async () => {
     try {
-      // On prépare les données pour ton modèle MySQL via Django
       const projetData = {
         titre: form.titre,
-        // On combine la description et les compétences pour le champ "description" de Django
         description: `${form.description}\n\nCompétences: ${form.competences}\nDélai: ${form.delai}`,
         budget: parseFloat(form.budget),
         categorie: form.categorie
       };
 
-      // Appel API avec ton token de connexion automatique
       await api.post('projets/', projetData);
-      
-      // Si succès, on passe à l'écran de confirmation (Étape 3)
       setEtape(3);
     } catch (err) {
-      console.error("Erreur lors de la publication :", err);
-      alert("Erreur. Vérifiez que vous êtes connecté et que tous les champs sont remplis.");
+      console.error('Erreur lors de la publication :', err);
+      alert('Erreur. Vérifiez que vous êtes connecté et que tous les champs sont remplis.');
     }
   };
 
   return (
     <div style={{
-      minHeight: '100vh', 
+      minHeight: '100vh',
       backgroundColor: '#f7f7f7',
       fontFamily: 'Arial, sans-serif'
     }}>
 
-      {/* NAVBAR */}
       <nav style={{
-        backgroundColor: '#fff', 
+        backgroundColor: '#fff',
         padding: '15px 40px',
-        display: 'flex', 
+        display: 'flex',
         justifyContent: 'space-between',
-        alignItems: 'center', 
+        alignItems: 'center',
         boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
-        position: 'sticky', 
-        top: 0, 
+        position: 'sticky',
+        top: 0,
         zIndex: 100
       }}>
         <h1 onClick={() => navigate('/')}
-          style={{ color: '#7cb342', margin: 0, fontSize: '26px', cursor: 'pointer' }}>
-          freelance<span style={{ color: '#333' }}>Platform</span>
+          style={{ margin: 0, fontSize: '26px', cursor: 'pointer' }}>
+          <BrandTitle />
         </h1>
         <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
           <span onClick={() => navigate('/')}
@@ -86,22 +80,21 @@ function PublierProjet() {
         </div>
       </nav>
 
-      {/* HEADER AVEC GRADIENT */}
       <motion.div
-        initial={{ opacity: 0 }} 
+        initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         style={{
           background: 'linear-gradient(135deg,#7cb342,#558b2f)',
-          padding: '40px', 
-          textAlign: 'center', 
+          padding: '40px',
+          textAlign: 'center',
           color: 'white'
         }}>
         <motion.h2
-          initial={{ opacity: 0, y: -30 }} 
+          initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7 }}
           style={{
-            fontSize: '40px', 
+            fontSize: '40px',
             fontWeight: '900',
             fontFamily: 'EB Garamond, Georgia, serif',
             marginBottom: '10px'
@@ -112,32 +105,31 @@ function PublierProjet() {
           Décrivez votre projet et recevez des candidatures
         </p>
 
-        {/* INDICATEUR D'ETAPES */}
         <div style={{
-          display: 'flex', 
+          display: 'flex',
           justifyContent: 'center',
-          gap: '10px', 
-          marginTop: '20px', 
+          gap: '10px',
+          marginTop: '20px',
           alignItems: 'center'
         }}>
           {[1, 2, 3].map((e) => (
             <div key={e} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <div style={{
-                width: '35px', 
-                height: '35px', 
+                width: '35px',
+                height: '35px',
                 borderRadius: '50%',
                 backgroundColor: etape >= e ? 'white' : 'rgba(255,255,255,0.3)',
                 color: etape >= e ? '#7cb342' : 'white',
-                display: 'flex', 
-                alignItems: 'center', 
+                display: 'flex',
+                alignItems: 'center',
                 justifyContent: 'center',
-                fontWeight: 'bold', 
+                fontWeight: 'bold',
                 fontSize: '16px'
               }}>
                 {e}
               </div>
               {e < 3 && <div style={{
-                width: '50px', 
+                width: '50px',
                 height: '2px',
                 backgroundColor: etape > e ? 'white' : 'rgba(255,255,255,0.3)'
               }} />}
@@ -150,13 +142,10 @@ function PublierProjet() {
         </p>
       </motion.div>
 
-      {/* ZONE DU FORMULAIRE */}
       <div style={{ maxWidth: '700px', margin: '40px auto', padding: '0 20px' }}>
-
-        {/* ETAPE 1 : INFOS GÉNÉRALES */}
         {etape === 1 && (
           <motion.div
-            initial={{ opacity: 0, x: 50 }} 
+            initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
             style={{
@@ -260,10 +249,9 @@ function PublierProjet() {
           </motion.div>
         )}
 
-        {/* ETAPE 2 : BUDGET ET DÉLAI */}
         {etape === 2 && (
           <motion.div
-            initial={{ opacity: 0, x: 50 }} 
+            initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
             style={{
@@ -316,7 +304,6 @@ function PublierProjet() {
                 </select>
               </div>
 
-              {/* RECAPITULATIF VISUEL */}
               <div style={{
                 backgroundColor: '#f9f9f9', borderRadius: '8px',
                 padding: '20px', borderLeft: '4px solid #7cb342'
@@ -348,8 +335,7 @@ function PublierProjet() {
                 }}>
                 ← Retour
               </motion.button>
-              
-              {/* BOUTON DE PUBLICATION RÉELLE */}
+
               <motion.button
                 whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
                 onClick={envoyerProjet}
@@ -365,10 +351,9 @@ function PublierProjet() {
           </motion.div>
         )}
 
-        {/* ETAPE 3 : CONFIRMATION FINALE */}
         {etape === 3 && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }} 
+            initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5 }}
             style={{
@@ -378,7 +363,7 @@ function PublierProjet() {
             }}>
 
             <motion.div
-              initial={{ scale: 0 }} 
+              initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.2, type: 'spring' }}>
               <p style={{ fontSize: '80px', margin: 0 }}>✅</p>
@@ -394,7 +379,7 @@ function PublierProjet() {
 
             <div style={{ display: 'flex', gap: '15px', justifyContent: 'center' }}>
               <motion.button
-                whileHover={{ scale: 1.05 }} 
+                whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => navigate('/projets')}
                 style={{
@@ -405,7 +390,7 @@ function PublierProjet() {
                 Voir les projets
               </motion.button>
               <motion.button
-                whileHover={{ scale: 1.05 }} 
+                whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => navigate('/')}
                 style={{
@@ -420,20 +405,7 @@ function PublierProjet() {
         )}
       </div>
 
-      <footer style={{
-        backgroundColor: '#1a1a2e', 
-        color: 'white',
-        textAlign: 'center', 
-        padding: '30px', 
-        marginTop: '40px'
-      }}>
-        <p style={{ color: '#7cb342', fontWeight: 'bold', fontSize: '18px' }}>
-          freelancePlatform
-        </p>
-        <p style={{ color: '#aaa', fontSize: '13px' }}>
-          2026 FreelancePlatform Tous droits réservés
-        </p>
-      </footer>
+      <Footer />
     </div>
   );
 }

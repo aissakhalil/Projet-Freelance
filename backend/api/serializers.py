@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Message, Projet, UserProfile, Candidature
 from django.contrib.auth.models import User
+from django.utils.text import slugify
 
 
 class MessageSerializer(serializers.ModelSerializer):
@@ -30,18 +31,33 @@ class ProjetSerializer(serializers.ModelSerializer):
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     role = serializers.ChoiceField(choices=['client', 'freelancer'])
+    nom = serializers.CharField(write_only=True, required=False, allow_blank=True)
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'password', 'role']
+        fields = ['email', 'password', 'role', 'nom']
 
     def create(self, validated_data):
         role = validated_data.pop('role')
+        display_name = validated_data.pop('nom', '').strip()
+        email = validated_data['email']
+
+        username_raw = display_name or email.split('@')[0]
+        username = slugify(username_raw) or 'user'
+        unique_username = username
+        counter = 1
+        while User.objects.filter(username=unique_username).exists():
+            unique_username = f"{username}{counter}"
+            counter += 1
+
         user = User.objects.create_user(
-            username=validated_data['username'],
-            email=validated_data.get('email', ''),
+            username=unique_username,
+            email=email,
             password=validated_data['password'],
         )
+        if display_name:
+            user.first_name = display_name
+            user.save()
         UserProfile.objects.create(user=user, role=role)
         return user
 

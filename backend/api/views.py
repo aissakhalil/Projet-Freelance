@@ -4,6 +4,8 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
 from .models import Projet, Message, UserProfile, Candidature
 from .serializers import (
     ProjetSerializer, MessageSerializer,
@@ -15,22 +17,38 @@ class RegisterView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
-        username = request.data.get('username', '').strip().replace(' ', '_')
+        display_name = request.data.get('username', '').strip()
         email = request.data.get('email', '').strip()
 
-        if User.objects.filter(username=username).exists():
-            return Response({"error": "Ce nom d'utilisateur est déjà pris."}, status=status.HTTP_400_BAD_REQUEST)
+        if not email.lower().endswith('@gmail.com'):
+            return Response({"error": "L'adresse email doit se terminer par @gmail.com."}, status=status.HTTP_400_BAD_REQUEST)
 
         if User.objects.filter(email=email).exists():
             return Response({"error": "Cet email est déjà utilisé."}, status=status.HTTP_400_BAD_REQUEST)
 
         data = request.data.copy()
-        data['username'] = username
+        data['nom'] = display_name
         serializer = RegisterSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
             return Response({"message": "Compte créé avec succès."}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        username = attrs.get('username')
+        if username and '@' in username:
+            try:
+                user = User.objects.get(email__iexact=username)
+                attrs['username'] = user.username
+            except User.DoesNotExist:
+                pass
+        return super().validate(attrs)
+
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
 
 
 @api_view(['GET'])
@@ -45,6 +63,7 @@ def get_user_info(request):
     return Response({
         'id': user.id,
         'username': user.username,
+        'nom': user.first_name or user.username,
         'email': user.email,
         'role': profile.role,
         'bio': profile.bio,

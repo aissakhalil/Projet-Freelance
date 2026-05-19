@@ -1,6 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import Footer from './Footer';
+import BrandTitle from './BrandTitle';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -32,8 +34,8 @@ export default function Solutions() {
       <nav style={{ backgroundColor: '#fff', padding: '15px 40px', display: 'flex',
         justifyContent: 'space-between', alignItems: 'center',
         boxShadow: '0 2px 10px rgba(0,0,0,0.1)', position: 'sticky', top: 0, zIndex: 100 }}>
-        <h1 onClick={() => navigate('/')} style={{ color: '#7cb342', margin: 0, fontSize: '26px', cursor: 'pointer' }}>
-          freelance<span style={{ color: '#333' }}>Platform</span>
+        <h1 onClick={() => navigate('/')} style={{ margin: 0, fontSize: '26px', cursor: 'pointer' }}>
+          <BrandTitle />
         </h1>
         <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
           <span onClick={() => navigate('/projets')} style={{ cursor: 'pointer', color: '#333' }}>Projets</span>
@@ -126,10 +128,7 @@ export default function Solutions() {
         </motion.button>
       </div>
 
-      <footer style={{ backgroundColor: '#111', color: 'white', textAlign: 'center', padding: '30px' }}>
-        <p style={{ color: '#7cb342', fontWeight: 'bold', fontSize: '18px' }}>freelancePlatform</p>
-        <p style={{ color: '#555', fontSize: '13px' }}>© 2026 FreelancePlatform — Tous droits réservés</p>
-      </footer>
+      <Footer />
     </div>
   );
 }

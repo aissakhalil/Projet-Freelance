@@ -16,6 +16,8 @@ import Solutions from './Solutions';
 import ModifierProfil from './ModifierProfil';
 import Messagerie from './Messagerie';
 import MesProjets from './MesProjets';
+import Footer from './Footer';
+import BrandTitle from './BrandTitle';
 
 const traductions = {
   Français: {
@@ -25,7 +27,7 @@ const traductions = {
     inscription: 'Inscription', hero: 'Trouvez le Freelancer Parfait',
     sous: 'Des milliers de professionnels prêts à travailler sur vos projets',
     recherche: 'Rechercher un service...', btn: 'Rechercher',
-    catPop: 'Catégories populaires', tout: 'Tout ce que vous trouvez sur FreelancePlatform',
+    catPop: 'Catégories populaires', tout: 'Tout ce que vous trouvez sur TalentFlow',
     footer: 'Tous droits réservés',
     profil: 'Profil', deconnexion: 'Déconnexion',
     publier: 'Publier un projet',
@@ -54,7 +56,7 @@ const traductions = {
     inscription: 'Sign up', hero: 'Find the Perfect Freelancer',
     sous: 'Thousands of professionals ready to work on your projects',
     recherche: 'Search for a service...', btn: 'Search',
-    catPop: 'Popular Categories', tout: 'Everything you find on FreelancePlatform',
+    catPop: 'Popular Categories', tout: 'Everything you find on TalentFlow',
     footer: 'All rights reserved',
     profil: 'Profile', deconnexion: 'Logout',
     publier: 'Post a project',
@@ -136,62 +138,13 @@ function Home() {
     <div style={{ fontFamily: 'Arial,sans-serif', margin: 0, padding: 0,
       width: '100%', overflowX: 'hidden', direction: isAr ? 'rtl' : 'ltr' }}>
 
-      <div style={{ backgroundColor: '#1a1a2e', color: 'white',
-        padding: '8px 40px', display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
-        <div style={{ display: 'flex', gap: '25px' }}>
-          <span onClick={() => navigate('/categories')}
-            style={{ color: '#ccc', textDecoration: 'none', cursor: 'pointer' }}>{t.cat}</span>
-          <span onClick={() => navigate('/pour-clients')}
-            style={{ color: '#ccc', textDecoration: 'none', cursor: 'pointer' }}>{t.clients}</span>
-          <span onClick={() => navigate('/pour-freelancers')}
-            style={{ color: '#ccc', textDecoration: 'none', cursor: 'pointer' }}>{t.freelances}</span>
-          <span onClick={() => navigate('/solutions')}
-            style={{ color: '#ccc', textDecoration: 'none', cursor: 'pointer' }}>{t.solutions}</span>
-        </div>
-      </div>
-
-      <nav style={{ backgroundColor: '#fff', padding: '15px 40px',
+      <nav style={{ backgroundColor: '#f5f5f5', padding: '15px 40px',
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
         boxShadow: '0 2px 10px rgba(0,0,0,0.1)', position: 'sticky', top: 0, zIndex: 100 }}>
-        <h1 onClick={() => navigate('/')} style={{ color: '#7cb342', margin: 0, fontSize: '26px', cursor: 'pointer' }}>
-          freelance<span style={{ color: '#333' }}>Platform</span>
+        <h1 onClick={() => navigate('/')} style={{ margin: 0, fontSize: '26px', cursor: 'pointer', fontWeight: 'bold' }}>
+          <BrandTitle showSubtitle />
         </h1>
-        <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-          <a href="#" style={{ textDecoration: 'none', color: '#333' }}>{t.explorer}</a>
-          <span onClick={() => navigate('/projets')} style={{ cursor: 'pointer', color: '#333' }}>{t.projets}</span>
-
-          {utilisateur && (
-            <span onClick={() => navigate('/messages')}
-              style={{ cursor: 'pointer', color: '#333', fontWeight: 'bold' }}>{t.messages}</span>
-          )}
-
-          {/* LIEN MES PROJETS — visible uniquement pour les clients */}
-          {utilisateur?.role === 'client' && (
-            <span onClick={() => navigate('/mes-projets')}
-              style={{ cursor: 'pointer', color: '#7cb342', fontWeight: 'bold' }}>{t.mesProjets}</span>
-          )}
-
-          {utilisateur ? (
-            <>
-              <span onClick={() => navigate('/profil')}
-                style={{ cursor: 'pointer', color: '#333', fontWeight: 'bold' }}>{t.profil}</span>
-              <span onClick={handleDeconnexion}
-                style={{ cursor: 'pointer', color: '#e53935', fontWeight: 'bold' }}>{t.deconnexion}</span>
-            </>
-          ) : (
-            <span onClick={() => navigate('/connexion')}
-              style={{ cursor: 'pointer', color: '#333' }}>{t.connexion}</span>
-          )}
-
-          <div style={{ display: 'flex', gap: '5px' }}>
-            <input type="text" value={search} onChange={(e) => setSearch(e.target.value)}
-              placeholder={t.recherche}
-              style={{ padding: '8px 12px', borderRadius: '5px',
-                border: '1px solid #ddd', fontSize: '13px', width: '180px' }} />
-            <button style={{ backgroundColor: '#7cb342', color: 'white', border: 'none',
-              padding: '8px 14px', borderRadius: '5px', cursor: 'pointer', fontSize: '13px' }}>🔍</button>
-          </div>
-
+        <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
           <select value={langue} onChange={(e) => setLangue(e.target.value)}
             style={{ padding: '8px', borderRadius: '5px', border: '1px solid #ddd' }}>
             <option>Français</option>
@@ -199,18 +152,32 @@ function Home() {
             <option>عربي</option>
           </select>
 
-          <button onClick={() => navigate('/publier')}
-            style={{ backgroundColor: 'white', color: '#7cb342', border: '2px solid #7cb342',
-              padding: '10px 20px', borderRadius: '5px', cursor: 'pointer', fontWeight: 'bold' }}>
-            {t.publier}
-          </button>
-
-          {!utilisateur && (
-            <button onClick={() => navigate('/inscription')}
-              style={{ backgroundColor: '#7cb342', color: 'white', border: 'none',
-                padding: '10px 20px', borderRadius: '5px', cursor: 'pointer', fontWeight: 'bold' }}>
-              {t.inscription}
-            </button>
+          {utilisateur ? (
+            <>
+              <span onClick={handleDeconnexion}
+                style={{ cursor: 'pointer', color: '#000', fontWeight: 'bold' }}>{t.deconnexion}</span>
+              <span onClick={() => navigate('/profil')}
+                style={{ cursor: 'pointer', color: '#000', fontWeight: 'bold' }}>{t.profil}</span>
+              <span onClick={() => navigate('/messages')}
+                style={{ cursor: 'pointer', color: '#000', fontWeight: 'bold' }}>{t.messages}</span>
+              <span onClick={() => navigate('/projets')}
+                style={{ cursor: 'pointer', color: '#000', fontWeight: 'bold' }}>{t.projets}</span>
+              <button onClick={() => navigate('/publier')}
+                style={{ backgroundColor: 'white', color: '#7cb342', border: '2px solid #7cb342',
+                  padding: '10px 20px', borderRadius: '5px', cursor: 'pointer', fontWeight: 'normal' }}>
+                {t.publier}
+              </button>
+            </>
+          ) : (
+            <>
+              <span onClick={() => navigate('/connexion')}
+                style={{ cursor: 'pointer', color: '#000', fontWeight: 'bold' }}>{t.connexion}</span>
+              <button onClick={() => navigate('/inscription')}
+                style={{ backgroundColor: '#7cb342', color: 'white', border: 'none',
+                  padding: '10px 20px', borderRadius: '5px', cursor: 'pointer', fontWeight: 'bold' }}>
+                {t.inscription}
+              </button>
+            </>
           )}
         </div>
       </nav>
@@ -287,7 +254,7 @@ function Home() {
           {t.infos.map((item, i) => (
             <motion.div key={i} initial="hidden" whileInView="visible" viewport={{ once: true }}
               variants={fadeUp} transition={{ delay: i * 0.15 }} whileHover={{ scale: 1.03 }}
-              style={{ backgroundColor: '#f9f9f9', borderRadius: '12px', padding: '30px',
+              style={{ backgroundColor: '#f5f5f5', borderRadius: '12px', padding: '30px',
                 textAlign: 'center', boxShadow: '0 2px 10px rgba(0,0,0,0.06)', borderTop: '4px solid #7cb342' }}>
               <h4 style={{ color: '#7cb342', marginBottom: '10px', fontSize: '18px' }}>{item.titre}</h4>
               <p style={{ color: '#666', fontSize: '14px', lineHeight: '1.6' }}>{item.texte}</p>
@@ -317,14 +284,14 @@ function Home() {
       </div>
 
       {/* CTA */}
-      <div style={{ padding: '70px 40px', backgroundColor: '#f7f7f7', textAlign: 'center', width: '100%', boxSizing: 'border-box' }}>
+      <div style={{ padding: '70px 40px', backgroundColor: '#f5f5f5', textAlign: 'center', width: '100%', boxSizing: 'border-box' }}>
         <motion.h3 initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
           style={{ fontSize: '32px', color: '#1a1a2e', marginBottom: '16px' }}>
           Prêt à démarrer ?
         </motion.h3>
         <motion.p initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
           style={{ color: '#666', fontSize: '16px', marginBottom: '30px' }}>
-          Rejoignez des milliers de freelancers et de clients sur FreelancePlatform.
+          Rejoignez des milliers de freelancers et de clients sur TalentFlow.
         </motion.p>
         <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
           {!utilisateur && (
@@ -344,10 +311,7 @@ function Home() {
         </div>
       </div>
 
-      <footer style={{ backgroundColor: '#111', color: 'white', textAlign: 'center', padding: '40px', width: '100%', boxSizing: 'border-box' }}>
-        <p style={{ fontSize: '22px', fontWeight: 'bold', color: '#7cb342', marginBottom: '10px' }}>freelancePlatform</p>
-        <p style={{ color: '#555' }}>2026 FreelancePlatform — {t.footer}</p>
-      </footer>
+      <Footer />
     </div>
   );
 }
